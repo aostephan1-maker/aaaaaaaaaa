@@ -3,7 +3,6 @@
 点击 Cloud Ports 面板中的 Proxy to local，会在剪贴板中插入一条 Shell 命令，将该命令粘贴到本地电脑的 Terminal 中并执行，就可以以本地域名的方式访问 cloudide 的内容。
 
 ![Step 1](/docs/cloud-ide-1.png "Step 1")
-![Step 2](/docs/cloud-ide-2.png "Step 2")
 
 ## 使用线上域名联调基座本地代码
 
@@ -71,64 +70,17 @@ pnpm run publish:materials-beta
 
 ## 命令速查表
 
-<table cellpadding="8" cellspacing="0" border="1" style="border-collapse:collapse;width:100%;font-size:14px;">
-  <thead>
-    <tr style="background:#f2f3f5;">
-      <th style="width:24%;text-align:left;">场景</th>
-      <th style="width:32%;text-align:left;">命令</th>
-      <th style="width:14%;text-align:left;">端口</th>
-      <th style="text-align:left;">说明</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td rowspan="2"><b>单模块开发</b></td>
-      <td><code>pnpm run dev:framework</code></td>
-      <td>8000</td>
-      <td>只起基座，业务模块走线上</td>
-    </tr>
-    <tr>
-      <td><code>pnpm run dev:pipeline</code></td>
-      <td>—</td>
-      <td>只起业务模块，基座走线上</td>
-    </tr>
-    <tr>
-      <td><b>基座 + 单模块联调</b></td>
-      <td>
-        <code>pnpm run dev:pipeline:frame</code><br>
-        <code>pnpm run dev:framework</code>
-      </td>
-      <td>双终端</td>
-      <td>frame 模式 + 基座，访问业务模块端口</td>
-    </tr>
-    <tr>
-      <td><b>全量联调</b></td>
-      <td><code>pnpm run dev:all</code></td>
-      <td>多端口</td>
-      <td>跨仓库模块会回退到线上资源</td>
-    </tr>
-    <tr>
-      <td><b>物料开发</b></td>
-      <td><code>pnpm run dev:materials</code></td>
-      <td>—</td>
-      <td>监听 packages 变更并自动热重载上游</td>
-    </tr>
-    <tr>
-      <td rowspan="2"><b>物料发布</b></td>
-      <td><code>pnpm run publish:materials</code></td>
-      <td colspan="2" style="text-align:center;background:#f7f8fa;">正式版</td>
-    </tr>
-    <tr>
-      <td><code>pnpm run publish:materials-beta</code></td>
-      <td colspan="2" style="text-align:center;background:#e8f3ff;color:#165dff;">Beta 测试版</td>
-    </tr>
-    <tr>
-      <td><b>新增物料</b></td>
-      <td><code>pnpm run add:material</code></td>
-      <td colspan="2">脚手架引导创建新的 packages 物料</td>
-    </tr>
-  </tbody>
-</table>
+| 场景             | 命令                                                     | 端口                    | 说明                     |
+| -------------- | ------------------------------------------------------ | --------------------- | ---------------------- |
+| **单模块开发**      | `pnpm run dev:framework`                               | 8000                  | 只起基座，业务模块走线上           |
+| **单模块开发**      | `pnpm run dev:pipeline`                                | —                     | 只起业务模块，基座走线上           |
+| **基座 + 单模块联调** | `pnpm run dev:pipeline:frame` `pnpm run dev:framework` | 双终端                   | frame 模式 + 基座，访问业务模块端口 |
+| **全量联调**       | `pnpm run dev:all`                                     | 多端口                   | 跨仓库模块会回退到线上资源          |
+| **物料开发**       | `pnpm run dev:materials`                               | —1                    | 监听 packages 变更并自动热重载上游 |
+| **物料发布**       | `pnpm run publish:materials`                           | 正式版                   | <br />                 |
+| **物料发布**       | `pnpm run publish:materials-beta`                      | Beta 测试版              | <br />                 |
+| <br />         | 3                                                      | 2                     | <br />                 |
+| **2新增物料**      | `pnpm run add:material1`                               | 脚手架引导创建新的 packages 物料 | <br />                 |
 
 ## 构建效率模型
 
