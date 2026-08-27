@@ -1,3 +1,197 @@
+# 数学公式速查
+
+> 本节汇集各类数学公式，用于测试 KaTeX 数学渲染能力（行内公式与块级公式）。
+
+## 1. 基础代数
+
+行内公式：二次方程求根 $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$。
+
+$$
+(a + b)^2 = a^2 + 2ab + b^2
+$$
+
+$$
+(a - b)^2 = a^2 - 2ab + b^2
+$$
+
+## 2. 微积分
+
+导数定义：
+
+$$
+f'(x) = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}
+$$
+
+不定积分：
+
+$$
+\int x^n \, dx = \frac{x^{n+1}}{n+1} + C, \quad n \ne -1
+$$
+
+定积分（高斯积分）：
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} \, dx = \sqrt{\pi}
+$$
+
+## 3. 级数
+
+等比数列求和（$|r| < 1$）：
+
+$$
+\sum_{n=0}^{\infty} ar^n = \frac{a}{1 - r}
+$$
+
+泰勒展开：
+
+$$
+e^x = \sum_{n=0}^{\infty} \frac{x^n}{n!} = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots
+$$
+
+## 4. 线性代数
+
+矩阵乘法：
+
+$$
+\begin{bmatrix} a & b \\ c & d \end{bmatrix} \begin{bmatrix} x \\ y \end{bmatrix} = \begin{bmatrix} ax + by \\ cx + dy \end{bmatrix}
+$$
+
+二阶矩阵求逆：
+
+$$
+\begin{bmatrix} a & b \\ c & d \end{bmatrix}^{-1} = \frac{1}{ad - bc} \begin{bmatrix} d & -b \\ -c & a \end{bmatrix}, \quad ad - bc \ne 0
+$$
+
+行列式：
+
+$$
+\det \begin{bmatrix} a & b \\ c & d \end{bmatrix} = ad - bc
+$$
+
+## 5. 概率与统计
+
+正态分布概率密度：
+
+$$
+f(x) = \frac{1}{\sigma \sqrt{2\pi}} \, e^{-\frac{(x - \mu)^2}{2\sigma^2}}
+$$
+
+贝叶斯定理：
+
+$$
+P(A \mid B) = \frac{P(B \mid A)\, P(A)}{P(B)}
+$$
+
+期望与方差：
+
+$$
+\mathbb{E}[X] = \sum_i x_i \, p_i, \qquad \mathrm{Var}(X) = \mathbb{E}[X^2] - \mathbb{E}[X]^2
+$$
+
+## 6. 复数与欧拉公式
+
+$$
+e^{i\theta} = \cos\theta + i\sin\theta
+$$
+
+欧拉恒等式：
+
+$$
+e^{i\pi} + 1 = 0
+$$
+
+## 7. 三角恒等式
+
+$$
+\sin^2\theta + \cos^2\theta = 1
+$$
+
+$$
+\sin(A \pm B) = \sin A \cos B \pm \cos A \sin B
+$$
+
+$$
+\cos(A \pm B) = \cos A \cos B \mp \sin A \sin B
+$$
+
+## 8. 物理公式
+
+牛顿第二定律：$F = ma$。
+
+动能定理：
+
+$$
+E_k = \frac{1}{2} m v^2
+$$
+
+质能方程：$E = mc^2$。
+
+麦克斯韦方程组（微分形式）：
+
+$$
+\nabla \cdot \mathbf{E} = \frac{\rho}{\varepsilon_0}, \quad \nabla \cdot \mathbf{B} = 0
+$$
+
+$$
+\nabla \times \mathbf{E} = -\frac{\partial \mathbf{B}}{\partial t}, \quad \nabla \times \mathbf{B} = \mu_0 \mathbf{J} + \mu_0 \varepsilon_0 \frac{\partial \mathbf{E}}{\partial t}
+$$
+
+## 9. 组合与数论
+
+排列组合：
+
+$$
+P(n, k) = \frac{n!}{(n-k)!}, \qquad C(n, k) = \binom{n}{k} = \frac{n!}{k!(n-k)!}
+$$
+
+二项式定理：
+
+$$
+(x + y)^n = \sum_{k=0}^{n} \binom{n}{k} x^{n-k} y^k
+$$
+
+## 10. 分段与条件
+
+绝对值函数：
+
+$$
+|x| = \begin{cases} x, & x \ge 0 \\ -x, & x < 0 \end{cases}
+$$
+
+符号函数：
+
+$$
+\mathrm{sgn}(x) = \begin{cases} 1, & x > 0 \\ 0, & x = 0 \\ -1, & x < 0 \end{cases}
+$$
+
+## 11. 极限与连续
+
+$$
+\lim_{x \to 0} \frac{\sin x}{x} = 1, \qquad \lim_{x \to \infty} \left(1 + \frac{1}{x}\right)^x = e
+$$
+
+## 12. 构建效率相关公式
+
+并行加速比（Amdahl）：
+
+$$
+S_{\max} = \frac{1}{f + \frac{1-f}{P}}
+$$
+
+缓存期望时间：
+
+$$
+\mathbb{E}[T] = T_b \cdot \left[(1-h)(1-r) + K(h + r - hr)\right]
+$$
+
+微前端首屏体积：
+
+$$
+\text{Payload} = B + (1-\alpha)\sum_{j=1}^{M} V_j + (1-\alpha)C
+$$
+
+---
+
 # Euler Thrift Service
 
 基于字节跳动 Euler 框架的 Thrift 服务示例。
@@ -1524,6 +1718,8 @@ $ ./bootstrap.sh
 ```sh
 $ python server.py
 ```
+
+
 
 ## 项目结构
 
