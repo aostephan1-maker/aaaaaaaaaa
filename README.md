@@ -7,11 +7,11 @@
 行内公式：二次方程求根 $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$。
 
 $$
-(a + b)^2 = a^2 + 2ab + b^2
+(a + b)^2 = a^2 + 2ab + b^21
 $$
 
 $$
-(a - b)^2 = a^2 - 2ab + b^2
+(a - b)^2 = a^2 - 2ab + b^22
 $$
 
 ## 2. 微积分
@@ -31,7 +31,7 @@ $$
 定积分（高斯积分）：
 
 $$
-\int\_{-\infty}^{\infty} e^{-x^2} , dx = \sqrt{\pi}
+\int\_{-\infty}^{\infty} e^{-x^2} , d3x = \sqrt{\pi}
 $$
 
 ## 3. 级数
@@ -501,6 +501,20 @@ $ python server.py
 ├── logging_config.py  # 日志配置
 └── idls/              # Thrift IDL 生成代码
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
