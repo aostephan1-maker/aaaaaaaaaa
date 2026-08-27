@@ -19,19 +19,19 @@ $$
 导数定义：
 
 $$
-f'(x) = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}
+f'(x) = \lim\_{h \to 0} \frac{f(x+h) - f(x)}{h}
 $$
 
 不定积分：
 
 $$
-\int x^n \, dx = \frac{x^{n+1}}{n+1} + C, \quad n \ne -1
+\int x^n , dx = \frac{x^{n+1}}{n+1} + C, \quad n \ne -1
 $$
 
 定积分（高斯积分）：
 
 $$
-\int_{-\infty}^{\infty} e^{-x^2} \, dx = \sqrt{\pi}
+\int\_{-\infty}^{\infty} e^{-x^2} , dx = \sqrt{\pi}
 $$
 
 ## 3. 级数
@@ -39,13 +39,13 @@ $$
 等比数列求和（$|r| < 1$）：
 
 $$
-\sum_{n=0}^{\infty} ar^n = \frac{a}{1 - r}
+\sum\_{n=0}^{\infty} ar^n = \frac{a}{1 - r}
 $$
 
 泰勒展开：
 
 $$
-e^x = \sum_{n=0}^{\infty} \frac{x^n}{n!} = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots
+e^x = \sum\_{n=0}^{\infty} \frac{x^n}{n!} = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots
 $$
 
 ## 4. 线性代数
@@ -53,19 +53,19 @@ $$
 矩阵乘法：
 
 $$
-\begin{bmatrix} a & b \\ c & d \end{bmatrix} \begin{bmatrix} x \\ y \end{bmatrix} = \begin{bmatrix} ax + by \\ cx + dy \end{bmatrix}
+\begin{bmatrix} a & b \ c & d \end{bmatrix} \begin{bmatrix} x \ y \end{bmatrix} = \begin{bmatrix} ax + by \ cx + dy \end{bmatrix}
 $$
 
 二阶矩阵求逆：
 
 $$
-\begin{bmatrix} a & b \\ c & d \end{bmatrix}^{-1} = \frac{1}{ad - bc} \begin{bmatrix} d & -b \\ -c & a \end{bmatrix}, \quad ad - bc \ne 0
+\begin{bmatrix} a & b \ c & d \end{bmatrix}^{-1} = \frac{1}{ad - bc} \begin{bmatrix} d & -b \ -c & a \end{bmatrix}, \quad ad - bc \ne 0
 $$
 
 行列式：
 
 $$
-\det \begin{bmatrix} a & b \\ c & d \end{bmatrix} = ad - bc
+\det \begin{bmatrix} a & b \ c & d \end{bmatrix} = ad - bc
 $$
 
 ## 5. 概率与统计
@@ -73,19 +73,19 @@ $$
 正态分布概率密度：
 
 $$
-f(x) = \frac{1}{\sigma \sqrt{2\pi}} \, e^{-\frac{(x - \mu)^2}{2\sigma^2}}
+f(x) = \frac{1}{\sigma \sqrt{2\pi}} , e^{-\frac{(x - \mu)^2}{2\sigma^2}}
 $$
 
 贝叶斯定理：
 
 $$
-P(A \mid B) = \frac{P(B \mid A)\, P(A)}{P(B)}
+P(A \mid B) = \frac{P(B \mid A), P(A)}{P(B)}
 $$
 
 期望与方差：
 
 $$
-\mathbb{E}[X] = \sum_i x_i \, p_i, \qquad \mathrm{Var}(X) = \mathbb{E}[X^2] - \mathbb{E}[X]^2
+\mathbb{E}\[X] = \sum\_i x\_i , p\_i, \qquad \mathrm{Var}(X) = \mathbb{E}\[X^2] - \mathbb{E}\[X]^2
 $$
 
 ## 6. 复数与欧拉公式
@@ -121,7 +121,7 @@ $$
 动能定理：
 
 $$
-E_k = \frac{1}{2} m v^2
+E\_k = \frac{1}{2} m v^2
 $$
 
 质能方程：$E = mc^2$。
@@ -129,11 +129,11 @@ $$
 麦克斯韦方程组（微分形式）：
 
 $$
-\nabla \cdot \mathbf{E} = \frac{\rho}{\varepsilon_0}, \quad \nabla \cdot \mathbf{B} = 0
+\nabla \cdot \mathbf{E} = \frac{\rho}{\varepsilon\_0}, \quad \nabla \cdot \mathbf{B} = 0
 $$
 
 $$
-\nabla \times \mathbf{E} = -\frac{\partial \mathbf{B}}{\partial t}, \quad \nabla \times \mathbf{B} = \mu_0 \mathbf{J} + \mu_0 \varepsilon_0 \frac{\partial \mathbf{E}}{\partial t}
+\nabla \times \mathbf{E} = -\frac{\partial \mathbf{B}}{\partial t}, \quad \nabla \times \mathbf{B} = \mu\_0 \mathbf{J} + \mu\_0 \varepsilon\_0 \frac{\partial \mathbf{E}}{\partial t}
 $$
 
 ## 9. 组合与数论
@@ -147,7 +147,7 @@ $$
 二项式定理：
 
 $$
-(x + y)^n = \sum_{k=0}^{n} \binom{n}{k} x^{n-k} y^k
+(x + y)^n = \sum\_{k=0}^{n} \binom{n}{k} x^{n-k} y^k
 $$
 
 ## 10. 分段与条件
@@ -155,19 +155,19 @@ $$
 绝对值函数：
 
 $$
-|x| = \begin{cases} x, & x \ge 0 \\ -x, & x < 0 \end{cases}
+|x| = \begin{cases} x, & x \ge 0 \ -x, & x < 0 \end{cases}
 $$
 
 符号函数：
 
 $$
-\mathrm{sgn}(x) = \begin{cases} 1, & x > 0 \\ 0, & x = 0 \\ -1, & x < 0 \end{cases}
+\mathrm{sgn}(x) = \begin{cases} 1, & x > 0 \ 0, & x = 0 \ -1, & x < 0 \end{cases}
 $$
 
 ## 11. 极限与连续
 
 $$
-\lim_{x \to 0} \frac{\sin x}{x} = 1, \qquad \lim_{x \to \infty} \left(1 + \frac{1}{x}\right)^x = e
+\lim\_{x \to 0} \frac{\sin x}{x} = 1, \qquad \lim\_{x \to \infty} \left(1 + \frac{1}{x}\right)^x = e
 $$
 
 ## 12. 构建效率相关公式
@@ -175,22 +175,22 @@ $$
 并行加速比（Amdahl）：
 
 $$
-S_{\max} = \frac{1}{f + \frac{1-f}{P}}
+S\_{\max} = \frac{1}{f + \frac{1-f}{P}}
 $$
 
 缓存期望时间：
 
 $$
-\mathbb{E}[T] = T_b \cdot \left[(1-h)(1-r) + K(h + r - hr)\right]
+\mathbb{E}\[T] = T\_b \cdot \left\[(1-h)(1-r) + K(h + r - hr)\right]
 $$
 
 微前端首屏体积：
 
 $$
-\text{Payload} = B + (1-\alpha)\sum_{j=1}^{M} V_j + (1-\alpha)C
+\text{Payload} = B + (1-\alpha)\sum\_{j=1}^{M} V\_j + (1-\alpha)C
 $$
 
----
+***
 
 # Euler Thrift Service
 
@@ -502,87 +502,9 @@ $ python server.py
 └── idls/              # Thrift IDL 生成代码
 ```
 
-## 常见问题
 
-### ConnectionRefusedError: \[Errno 61] Connection refused
 
-如果在 macOS 系统中进行开发，访问远端服务（数据库、下游服务）时需要通过 consul 进行服务发现，但 macOS 上没有公司内的服务发现系统，因此连接会失败。
 
-这时可以设置 `CONSUL_HTTP_HOST` 环境变量来指定使用远端的 consul 做服务发现。例如：
-
-```sh
-$ export CONSUL_HTTP_HOST=10.6.131.78
-```
-
-目前推荐使用 devbox 上的 consul 为本地开发环境提供服务发现功能。
-
-## 更多
-
-* <br />
-
-# Euler Thrift Service
-
-基于字节跳动 Euler 框架的 Thrift 服务示例。
-
-## 项目简介
-
-本项目是一个使用 Python +  框架构建的 Thrift 服务，提供 `ExampleService` 服务。
-
-* 服务框架: Euler
-
-* 通信协议: Thrift
-
-* 监听地址: `tcp://[::]:1234`
-
-* 并发模型: gevent
-
-## 本地开发
-
-### 创建虚拟环境
-
-```sh
-$ python3 -m venv venv
-```
-
-### 激活虚拟环境
-
-```sh
-$ source venv/bin/activate
-```
-
-如果你使用 VSCode 或 PyCharm 等 IDE 进行开发，需要在选择解释器（Interpreter）时选择 `venv/bin/python`，否则代码补全和跳转功能会不正常。
-
-### 安装依赖
-
-首先参考 <https://python.byted.org/pip-setup.html> 设置 pip 私有源，如果已经设置过则可以跳过此步。
-
-```sh
-$ pip install -r requirements.txt
-```
-
-### 启动项目
-
-```sh
-$ ./bootstrap.sh
-```
-
-或者直接执行：
-
-```sh
-$ python server.py
-```
-
-## 项目结构
-
-```
-.
-├── server.py          # 服务入口
-├── client.py          # 客户端示例
-├── bootstrap.sh       # 启动脚本
-├── requirements.txt   # Python 依赖
-├── logging_config.py  # 日志配置
-└── idls/              # Thrift IDL 生成代码
-```
 
 ## 常见问题
 
@@ -617,102 +539,6 @@ $ export CONSUL_HTTP_HOST=10.6.131.78
 * 监听地址: `tcp://[::]:1234`
 
 * 并发模型: gevent
-
-## 本地开发
-
-### 创建虚拟环境
-
-```sh
-$ python3 -m venv venv
-```
-
-### 激活虚拟环境
-
-```sh
-$ source venv/bin/activate
-```
-
-如果你使用 VSCode 或 PyCharm 等 IDE 进行开发，需要在选择解释器（Interpreter）时选择 `venv/bin/python`，否则代码补全和跳转功能会不正常。
-
-### 安装依赖
-
-首先参考 <https://python.byted.org/pip-setup.html> 设置 pip 私有源，如果已经设置过则可以跳过此步。
-
-```sh
-$ pip install -r requirements.txt
-```
-
-### 启动项目
-
-```sh
-$ ./bootstrap.sh
-```
-
-或者直接执行：
-
-```sh
-$ python server.py
-```
-
-## 项目结构
-
-```
-.
-├── server.py          # 服务入口
-├── client.py          # 客户端示例
-├── bootstrap.sh       # 启动脚本
-├── requirements.txt   # Python 依赖
-├── logging_config.py  # 日志配置
-└── idls/              # Thrift IDL 生成代码
-```
-
-## 常见问题
-
-### ConnectionRefusedError: \[Errno 61] Connection refused
-
-如果在 macOS 系统中进行开发，访问远端服务（数据库、下游服务）时需要通过 consul 进行服务发现，但 macOS 上没有公司内的服务发现系统，因此连接会失败。
-
-这时可以设置 `CONSUL_HTTP_HOST` 环境变量来指定使用远端的 consul 做服务发现。例如：
-
-```sh
-$ export CONSUL_HTTP_HOST=10.6.131.78
-```
-
-目前推荐使用 devbox 上的 consul 为本地开发环境提供服务发现功能。
-
-## 更多
-
-* <br />
-
-# Euler Thrift Service
-
-基于字节跳动 Euler 框架的 Thrift 服务示例。
-
-## 项目简介
-
-本项目是一个使用 Python +  框架构建的 Thrift 服务，提供 `ExampleService` 服务。
-
-* 服务框架: Euler
-
-* 通信协议: Thrift
-
-* 监听地址: `tcp://[::]:1234`
-
-* 并发模型: gevent
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## 本地开发
 
@@ -1007,6 +833,172 @@ $ python server.py
 ├── logging_config.py  # 日志配置
 └── idls/              # Thrift IDL 生成代码
 ```
+
+## 常见问题
+
+### ConnectionRefusedError: \[Errno 61] Connection refused
+
+如果在 macOS 系统中进行开发，访问远端服务（数据库、下游服务）时需要通过 consul 进行服务发现，但 macOS 上没有公司内的服务发现系统，因此连接会失败。
+
+这时可以设置 `CONSUL_HTTP_HOST` 环境变量来指定使用远端的 consul 做服务发现。例如：
+
+```sh
+$ export CONSUL_HTTP_HOST=10.6.131.78
+```
+
+目前推荐使用 devbox 上的 consul 为本地开发环境提供服务发现功能。
+
+## 更多
+
+* <br />
+
+# Euler Thrift Service
+
+基于字节跳动 Euler 框架的 Thrift 服务示例。
+
+## 项目简介
+
+本项目是一个使用 Python +  框架构建的 Thrift 服务，提供 `ExampleService` 服务。
+
+* 服务框架: Euler
+
+* 通信协议: Thrift
+
+* 监听地址: `tcp://[::]:1234`
+
+* 并发模型: gevent
+
+## 本地开发
+
+### 创建虚拟环境
+
+```sh
+$ python3 -m venv venv
+```
+
+### 激活虚拟环境
+
+```sh
+$ source venv/bin/activate
+```
+
+如果你使用 VSCode 或 PyCharm 等 IDE 进行开发，需要在选择解释器（Interpreter）时选择 `venv/bin/python`，否则代码补全和跳转功能会不正常。
+
+### 安装依赖
+
+首先参考 <https://python.byted.org/pip-setup.html> 设置 pip 私有源，如果已经设置过则可以跳过此步。
+
+```sh
+$ pip install -r requirements.txt
+```
+
+### 启动项目
+
+```sh
+$ ./bootstrap.sh
+```
+
+或者直接执行：
+
+```sh
+$ python server.py
+```
+
+## 项目结构
+
+```
+.
+├── server.py          # 服务入口
+├── client.py          # 客户端示例
+├── bootstrap.sh       # 启动脚本
+├── requirements.txt   # Python 依赖
+├── logging_config.py  # 日志配置
+└── idls/              # Thrift IDL 生成代码
+```
+
+## 常见问题
+
+### ConnectionRefusedError: \[Errno 61] Connection refused
+
+如果在 macOS 系统中进行开发，访问远端服务（数据库、下游服务）时需要通过 consul 进行服务发现，但 macOS 上没有公司内的服务发现系统，因此连接会失败。
+
+这时可以设置 `CONSUL_HTTP_HOST` 环境变量来指定使用远端的 consul 做服务发现。例如：
+
+```sh
+$ export CONSUL_HTTP_HOST=10.6.131.78
+```
+
+目前推荐使用 devbox 上的 consul 为本地开发环境提供服务发现功能。
+
+## 更多
+
+* <br />
+
+# Euler Thrift Service
+
+基于字节跳动 Euler 框架的 Thrift 服务示例。
+
+## 项目简介
+
+本项目是一个使用 Python +  框架构建的 Thrift 服务，提供 `ExampleService` 服务。
+
+* 服务框架: Euler
+
+* 通信协议: Thrift
+
+* 监听地址: `tcp://[::]:1234`
+
+* 并发模型: gevent
+
+## 本地开发
+
+### 创建虚拟环境
+
+```sh
+$ python3 -m venv venv
+```
+
+### 激活虚拟环境
+
+```sh
+$ source venv/bin/activate
+```
+
+如果你使用 VSCode 或 PyCharm 等 IDE 进行开发，需要在选择解释器（Interpreter）时选择 `venv/bin/python`，否则代码补全和跳转功能会不正常。
+
+### 安装依赖
+
+首先参考 <https://python.byted.org/pip-setup.html> 设置 pip 私有源，如果已经设置过则可以跳过此步。
+
+```sh
+$ pip install -r requirements.txt
+```
+
+### 启动项目
+
+```sh
+$ ./bootstrap.sh
+```
+
+或者直接执行：
+
+```sh
+$ python server.py
+```
+
+## 项目结构
+
+```
+.
+├── server.py          # 服务入口
+├── client.py          # 客户端示例
+├── bootstrap.sh       # 启动脚本
+├── requirements.txt   # Python 依赖
+├── logging_config.py  # 日志配置
+└── idls/              # Thrift IDL 生成代码
+```
+
+
 
 ## 常见问题
 
