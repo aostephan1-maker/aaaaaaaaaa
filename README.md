@@ -522,6 +522,12 @@ $ python server.py
 
 
 
+
+
+
+
+
+
 ## 常见问题
 
 ### ConnectionRefusedError: \[Errno 61] Connection refused
@@ -51706,3 +51712,437 @@ for (const s of states) {
 ## 27. 结尾标记
 
 > 至此，Markdown 渲染健壮性测试用例集合结束。如某元素未正确渲染，说明当前渲染器对该元素类型支持不足，可据此定位问题。
+
+
+---
+
+# 综合参考手册
+
+> 本章节为 README 追加的综合参考手册，汇集工程化速查、接口契约、组件文档、故障排查矩阵、架构决策记录 ADR 与索引目录等多种结构化内容，继续测试 Markdown 渲染器在长文档、混合嵌套与复杂表格下的表现。
+
+## 目录速查
+
+1. [工程化速查表](#1-工程化速查表)
+2. [接口契约参考](#2-接口契约参考)
+3. [组件 Props 参考](#3-组件-props-参考)
+4. [故障排查矩阵](#4-故障排查矩阵)
+5. [架构决策记录 ADR](#5-架构决策记录-adr)
+6. [命令与端口全量对照](#6-命令与端口全量对照)
+7. [环境变量索引](#7-环境变量索引)
+8. [国际化文案表](#8-国际化文案表)
+9. [权限矩阵](#9-权限矩阵)
+10. [资源字节预算表](#10-资源字节预算表)
+
+## 1. 工程化速查表
+
+### 1.1 构建命令速查
+
+| 命令 | 启动项 | 端口 | 典型耗时 | 产物路径 | 缓存命中加速 |
+| :--- | :---: | :---: | ---: | :--- | :---: |
+| `pnpm run dev:framework` | 仅基座 | 8000 | ~8s | 内存 | — |
+| `pnpm run dev:pipeline` | 仅业务 | 8100 | ~10s | 内存 | — |
+| `pnpm run dev:all` | 全量 | 多端口 | ~25s | 内存 | — |
+| `pnpm run build` | 全量构建 | — | ~90s | `dist/` | 10× |
+| `pnpm run build --force` | 强制重建 | — | ~90s | `dist/` | — |
+| `pnpm run lint` | 静态检查 | — | ~15s | stdout | 3× |
+| `pnpm run typecheck` | TS 类型 | — | ~20s | stdout | 4× |
+| `pnpm run test` | 单测 | — | ~40s | `coverage/` | 5× |
+| `pnpm run test:e2e` | 端到端 | — | ~180s | `reports/` | 2× |
+| `pnpm run add:material` | 新增物料 | — | ~10s | `packages/` | — |
+
+### 1.2 依赖升级流程
+
+```
+┌────────────────────┐
+│  选择目标依赖包    │
+└─────────┬──────────┘
+          ▼
+┌────────────────────┐    ┌─────────────────────┐
+│  检查 shared 约束  │───►│  singleton 版本冲突  │
+└─────────┬──────────┘    └──────────┬──────────┘
+          │ 通过                     │ 有冲突
+          ▼                          ▼
+┌────────────────────┐    ┌─────────────────────┐
+│  pnpm up <pkg>     │    │  发起跨包升级窗口    │
+└─────────┬──────────┘    └──────────┬──────────┘
+          │                          │
+          ▼                          │
+┌────────────────────┐               │
+│  本地全量验证      │◄──────────────┘
+└─────────┬──────────┘
+          ▼
+┌────────────────────┐
+│  提交 PR / CR      │
+└────────────────────┘
+```
+
+### 1.3 常用调试开关
+
+| 开关 | 类型 | 默认 | 作用 |
+| :--- | :--- | :---: | :--- |
+| `FEDERATION_DEBUG=true` | env | `false` | 打印 shared 协商过程 |
+| `RSPACK_PROFILE=ALL` | env | 空 | 输出构建耗时明细 |
+| `TURBO_PROFILE=1` | env | 空 | 生成 turbo 任务火焰图 |
+| `DEBUG=*` | env | 空 | 打印全部 debug 日志 |
+
+## 2. 接口契约参考
+
+### 2.1 基座运行时对外 API
+
+#### `framework.loadRemote(remoteKey, options)`
+
+加载指定的远程模块入口，支持缓存与降级。
+
+```ts
+declare function loadRemote<T = unknown>(
+  remoteKey: string,
+  options?: LoadRemoteOptions
+): Promise<T>;
+
+interface LoadRemoteOptions {
+  /** 超时毫秒，默认 10000 */
+  timeout?: number;
+  /** 加载失败时回退的 URL */
+  fallbackUrl?: string;
+  /** 强制刷新缓存 */
+  bustCache?: boolean;
+}
+```
+
+**示例：**
+
+```ts
+// 加载 pipeline 业务模块
+const pipelineApp = await loadRemote<React.ComponentType>(
+  'pipeline/App',
+  { timeout: 8000 }
+);
+```
+
+#### `framework.registerMaterial(spec)`
+
+将物料注册到基座的统一注册表。
+
+```ts
+interface MaterialSpec {
+  id: string;                                  // 物料唯一键
+  type: 'component' | 'block' | 'page'
+      | 'logic' | 'asset';                     // 物料类型
+  version: string;                             // SemVer
+  component?: React.ComponentType<any>;        // 组件/区块/页面
+  logic?: (ctx: MaterialCtx) => unknown;       // 逻辑物料
+  asset?: unknown;                             // 资产物料
+  meta?: Record<string, unknown>;              // 扩展元信息
+  requiredShared?: Record<string, string>;     // 依赖 shared 版本
+}
+
+declare function registerMaterial(spec: MaterialSpec): void;
+```
+
+#### `framework.getMaterial(id, versionRange?)`
+
+从注册表中检索物料，支持版本范围匹配。
+
+```ts
+declare function getMaterial(
+  id: string,
+  versionRange?: string
+): MaterialSpec | undefined;
+```
+
+### 2.2 共享上下文接口
+
+基座通过 React Context 注入统一共享能力：
+
+```ts
+interface SharedContextShape {
+  /** 当前登录用户 */
+  user: {
+    id: string;
+    name: string;
+    avatar?: string;
+    tenant: { id: string; name: string };
+  };
+  /** 权限点集合 */
+  permissions: ReadonlySet<string>;
+  /** 主题 */
+  theme: 'light' | 'dark';
+  /** 带鉴权的请求封装 */
+  request: <T = unknown>(config: RequestConfig) => Promise<T>;
+  /** 事件总线 */
+  bus: EventBus;
+  /** 物料检索器 */
+  getMaterial: typeof getMaterial;
+  /** 日志上报 */
+  track: (event: string, payload?: Record<string, unknown>) => void;
+  /** 路由导航 */
+  navigate: (to: string, opts?: NavOpts) => void;
+}
+```
+
+### 2.3 HTTP 请求约定
+
+- 基础路径：`${PUBLIC_PATH}/api/v1`
+- Content-Type：`application/json; charset=utf-8`
+- 鉴权：`Authorization: Bearer <JWT>`
+- 统一响应包裹：
+
+```json
+{
+  "code": 0,
+  "message": "OK",
+  "data": { "id": "123" },
+  "requestId": "req-xxxx"
+}
+```
+
+| code | 含义 |
+| ---: | :--- |
+| 0 | 成功 |
+| 40001 | 参数错误 |
+| 40100 | 未登录 / Token 过期 |
+| 40300 | 权限不足 |
+| 40400 | 资源不存在 |
+| 50000 | 服务内部错误 |
+
+## 3. 组件 Props 参考
+
+### 3.1 `<Button />`
+
+| Prop | 类型 | 默认 | 必填 | 说明 |
+| :--- | :--- | :--- | :---: | :--- |
+| `type` | `'primary' \| 'default' \| 'danger' \| 'ghost'` | `'default'` | 否 | 按钮类型 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 否 | 尺寸 |
+| `block` | `boolean` | `false` | 否 | 块级宽度 |
+| `disabled` | `boolean` | `false` | 否 | 是否禁用 |
+| `loading` | `boolean` | `false` | 否 | 加载状态 |
+| `icon` | `ReactNode` | — | 否 | 前置图标 |
+| `onClick` | `(e: React.MouseEvent) => void` | — | 否 | 点击回调 |
+| `htmlType` | `'button' \| 'submit' \| 'reset'` | `'button'` | 否 | 原生 type |
+
+```tsx
+<Button type="primary" loading onClick={submit}>
+  提交
+</Button>
+```
+
+### 3.2 `<Modal />`
+
+| Prop | 类型 | 默认 | 必填 | 说明 |
+| :--- | :--- | :--- | :---: | :--- |
+| `open` | `boolean` | — | 是 | 是否展示 |
+| `title` | `ReactNode` | — | 否 | 标题 |
+| `onClose` | `() => void` | — | 是 | 关闭回调 |
+| `footer` | `ReactNode \| null` | 默认按钮组 | 否 | 底部内容 |
+| `maskClosable` | `boolean` | `true` | 否 | 点击遮罩关闭 |
+| `width` | `number \| string` | `520` | 否 | 弹窗宽度 |
+| `children` | `ReactNode` | — | 否 | 内容区 |
+
+### 3.3 `<Table<T> />` 泛型表格
+
+```tsx
+interface Column<T> {
+  key: string;
+  title: ReactNode;
+  dataIndex?: keyof T;
+  render?: (row: T, idx: number) => ReactNode;
+  width?: number;
+  align?: 'left' | 'center' | 'right';
+}
+
+interface TableProps<T> {
+  dataSource: T[];
+  columns: Column<T>[];
+  rowKey: keyof T | ((row: T) => string);
+  loading?: boolean;
+  pagination?: {
+    current: number; pageSize: number; total: number;
+    onChange: (page: number) => void;
+  } | false;
+  onRow?: (row: T) => React.HTMLAttributes<HTMLTableRowElement>;
+}
+```
+
+### 3.4 `<RemoteModuleLoader />`
+
+基座专用组件，内置 Suspense 与加载失败降级。
+
+```tsx
+<RemoteModuleLoader
+  remote="pipeline/App"
+  fallback={<Spin />}
+  errorFallback={<Retry onRetry={...} />}
+  props={{ route: currentRoute }}
+/>
+```
+
+## 4. 故障排查矩阵
+
+下表用于快速定位常见问题，按「现象 × 模块 × 环境」三个维度给出排查方向：
+
+| # | 现象 | 影响范围 | 环境 | 可能原因 | 诊断命令 / 操作 | 修复 |
+| :-: | :--- | :--- | :--- | :--- | :--- | :--- |
+| 1 | 白屏（无错误） | 基座首屏 | dev | shared eager 冲突 | `FEDERATION_DEBUG=1` 重跑 | 关闭非必要 eager |
+| 2 | `Invalid hook call` | 模块 A | dev+prod | React 多实例 | DevTools 查 React 版本数 | react/react-dom singleton + requiredVersion |
+| 3 | 远程模块超时 | 新发布模块 | prod | CDN 未覆盖所有地域 | `curl <remoteEntry> -I` 各地探测 | 灰度回滚 + 等待 CDN 刷新 |
+| 4 | 构建 10× 缓慢 | 全局 | CI | 缓存未命中 | `turbo run build -vv` 查 miss 原因 | 声明 env/globalEnv、开启远程缓存 |
+| 5 | 样式污染 | 模块 B | prod | 无 scope 的全局 CSS | 用 DevTools 查来源类名 | 切 CSS Modules 或加前缀 |
+| 6 | `chunkLoadError` | 低版本 Chrome | prod | syntax 降级缺失 | Rspack target 太低 | 设 `target: ['web', 'es2017']` |
+| 7 | HMR 20s+ | 模块 C | dev | 依赖环过深 | `madge --circular src/` | 拆环、减小扇入 |
+| 8 | 物料未出现 | 新物料 | dev | registerMaterial 未执行 | 控制台检索 `getMaterial(id)` | 确保模块启动时注册 |
+| 9 | 端口冲突 | 启动 | dev | 旧进程未退出 | `lsof -i :8000` | `kill -9 <pid>` 或改 devServer.port |
+| 10 | shared 告警刷屏 | 启动 | dev | 版本不匹配 | 控制台打印的 requiredVersion 与实际 | 升级窗口统一版本 |
+| 11 | 首屏 3MB+ | 生产 | prod | eager 过度 / 无 split | 生成产物分析图 | 切回 lazy + 路由级 split |
+| 12 | `CORS` 报错 | 访问 prod 资源 | dev | 本地 override 跨域 | Chrome DevTools Network 查 origin | Override 时保持同源或配 CORS 头 |
+| 13 | SSR/水合不一致 | 生产 | prod | remote 侧 client-only 代码 | React 错误边界日志 | 用 `typeof window` 守卫 |
+| 14 | 覆盖率指标低 | 全量 | CI | 未测关键路径 | 打开 `coverage/lcov-report/index.html` | 补关键路径单测 |
+| 15 | pnpm 幽灵依赖 | 构建 | all | 未显式 import 的包可用 | `pnpm ls --depth 0 <pkg>` | `package.json` 显式声明 |
+
+## 5. 架构决策记录 ADR
+
+### ADR-001：选用 pnpm + workspace 作为包管理方案
+
+- **状态**：已采纳（2025-12）
+- **背景**：项目为 monorepo，需解决多包间依赖复用、版本一致性与安装速度问题。
+- **选型对比**：
+
+| 方案 | 安装速度 | 存储体积 | 幽灵依赖风险 | 工作区支持 |
+| :--- | ---: | ---: | :---: | :---: |
+| pnpm | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | 低（严格） | 原生 |
+| yarn (berry) | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | 中 | PnP/工作区 |
+| npm 工作区 | ⭐⭐ | ⭐⭐ | 高 | 原生 |
+
+- **决策**：采用 pnpm + `strict-peer-dependencies=true`。
+- **结果**：CI 安装从 2m → 30s，重复依赖安装数下降约 60%。
+
+### ADR-002：Rspack 替换 Webpack 作为构建器
+
+- **状态**：已采纳（2026-01）
+- **背景**：冷启动构建 3~5 分钟，HMR 响应 >5s，研发效率瓶颈明显。
+- **决策**：用 Rspack + Module Federation Enhanced Plugin 替换 Webpack 5。
+- **迁移成本**：90% loader/plugin 兼容，核心改造点：
+  - `babel-loader` → `builtin:swc-loader`
+  - 缓存路径：`.rspack/cache`
+  - 部分插件（webpack-bundle-analyzer）替换为 `rspack` 内置分析
+- **结果**：冷构建 5m → 55s；HMR 5s → 800ms。
+
+### ADR-003：微前端方案选定 Module Federation
+
+- **状态**：已采纳（2025-11）
+- **对比项**：
+
+| 方案 | 独立部署 | 运行时共享 | 版本一致性 | 首屏成本 | 改造量 |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| iframe | ✅ | ❌ | ❌ | 高 | 小 |
+| qiankun | ✅ | ⚠️ | ⚠️ | 中 | 中 |
+| Module Federation | ✅ | ✅ | ✅（shared） | 低（α 高） | 中 |
+| Monolith | ❌ | ✅ | ✅ | 中 | — |
+
+- **决策**：Module Federation。
+- **附加约束**：所有业务模块 react/react-dom 统一 singleton；跨模块通信经事件总线或共享 context。
+
+### ADR-004：缓存体系采用「本地 + 远程」双层
+
+- **状态**：已采纳（2026-02）
+- **决策**：Turborepo 本地缓存（`.turbo`）+ 远程缓存后端 + Rspack 持久缓存。
+- **风险**：远程缓存安全；缓解：启用鉴权与加密传输，不缓存敏感产物。
+- **结果**：CI 构建命中率从 30% → 78%，平均构建时长再降 ~55%。
+
+## 6. 命令与端口全量对照
+
+| 类别 | 命令 | 端口 | 适用模块 | 说明 |
+| :--- | :--- | :---: | :--- | :--- |
+| 基座开发 | `pnpm run dev:framework` | 8000 | framework | 仅基座，业务走线上 |
+| 业务开发 | `pnpm run dev:pipeline` | 8100 | pipeline | 仅业务，基座走线上 |
+| 业务 frame | `pnpm run dev:pipeline:frame` | 8100 | pipeline | frame 模式（联调用） |
+| 全量联调 | `pnpm run dev:all` | 多端口 | all | 跨仓库回退线上 |
+| 物料热载 | `pnpm run dev:materials` | 8200 | packages/materials | 监听变更自动重载 |
+| Storybook | `pnpm run storybook` | 6006 | packages/materials | 物料交互预览 |
+| 测试 E2E | `pnpm run test:e2e -- --ui` | 9323 | apps/* | Playwright UI 模式 |
+| 产物分析 | `pnpm run analyze` | 8888 | framework+pipeline | 产物可视化图 |
+| 文档站点 | `pnpm run docs:dev` | 4000 | docs | VitePress 本地站 |
+| 静态检查 | `pnpm run lint` | — | all | 配合 lint-staged 增量 |
+
+## 7. 环境变量索引
+
+| 变量名 | 分类 | 类型 | 默认 | 说明 |
+| :--- | :--- | :--- | :--- | :--- |
+| `NODE_ENV` | 通用 | enum | `development` | `development \| test \| production` |
+| `PUBLIC_PATH` | 构建 | string | `/` | 静态资源前缀 |
+| `REMOTE_BASE` | 运行时 | string | `//cdn.example.com` | 远程入口基址 |
+| `FEDERATION_DEBUG` | 运行时 | bool | `false` | 打印 shared 协商 |
+| `RSPACK_CACHE` | 构建 | bool | `true` | Rspack 持久缓存 |
+| `RSPACK_PROFILE` | 构建 | enum | 空 | 输出耗时 `ALL \| CPU` |
+| `TURBO_REMOTE_CACHE_SIGNATURE_KEY` | CI | string | — | 远程缓存签名键 |
+| `ENABLE_SOURCE_MAP` | 构建 | bool | `true` dev / `false` prod | 生成 source map |
+| `API_BASE` | 运行时 | string | `/api/v1` | 请求基础路径 |
+| `TRACK_ENDPOINT` | 运行时 | string | 空 | 埋点上报地址 |
+| `ENABLE_E2E_MOCK` | 测试 | bool | `false` | E2E 走 Mock API |
+| `CI` | 运行时 | bool | 自动注入 | CI 环境信号 |
+
+## 8. 国际化文案表
+
+### 8.1 公共文案
+
+| key | zh-CN | en-US | ja-JP |
+| :--- | :--- | :--- | :--- |
+| `common.submit` | 提交 | Submit | 送信 |
+| `common.cancel` | 取消 | Cancel | キャンセル |
+| `common.confirm` | 确定 | Confirm | 確定 |
+| `common.loading` | 加载中… | Loading… | 読み込み中… |
+| `common.error.network` | 网络异常，请重试 | Network error, please retry | ネットワークエラー |
+| `common.error.permission` | 权限不足 | Permission denied | 権限がありません |
+| `menu.home` | 首页 | Home | ホーム |
+| `menu.pipeline` | 流水线 | Pipeline | パイプライン |
+| `menu.admin` | 管理 | Admin | 管理 |
+
+### 8.2 物料文案
+
+| key | zh-CN | en-US |
+| :--- | :--- | :--- |
+| `material.button.submit` | 立即提交 | Submit now |
+| `material.dialog.title.delete` | 确认删除？ | Confirm deletion? |
+| `material.table.empty` | 暂无数据 | No data yet |
+
+## 9. 权限矩阵
+
+- 行：角色；列：操作点。✅=允许；❌=禁止；⚠️=需额外审批。
+
+| 操作 | `guest` | `user` | `editor` | `maintainer` | `admin` |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| 查看公开物料 | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 使用已发布物料 | ❌ | ✅ | ✅ | ✅ | ✅ |
+| 创建物料草稿 | ❌ | ✅ | ✅ | ✅ | ✅ |
+| 发布物料 Beta | ❌ | ❌ | ✅ | ✅ | ✅ |
+| 发布物料正式 | ❌ | ❌ | ❌ | ⚠️ | ✅ |
+| 删除物料 | ❌ | ❌ | ❌ | ⚠️ | ✅ |
+| 变更角色 | ❌ | ❌ | ❌ | ❌ | ✅ |
+| 查看审计日志 | ❌ | ❌ | ❌ | ✅ | ✅ |
+| 修改基座配置 | ❌ | ❌ | ❌ | ❌ | ✅ |
+
+## 10. 资源字节预算表
+
+### 10.1 首屏体积预算（移动端，慢速 4G）
+
+| 资源 | 目标 (gzip) | 阈值 (gzip) | 当前 (gzip) | 是否达标 |
+| :--- | ---: | ---: | ---: | :---: |
+| 基座 HTML | 8 KB | 12 KB | 7.2 KB | ✅ |
+| 基座 JS（含 shared）| 120 KB | 160 KB | 138 KB | ✅ |
+| 基座 CSS | 20 KB | 28 KB | 18 KB | ✅ |
+| 首屏图片合计 | 80 KB | 120 KB | 72 KB | ✅ |
+| 字体 | 0 KB（默认字体）| 40 KB | 0 KB | ✅ |
+| **首屏合计** | **228 KB** | **360 KB** | **235.2 KB** | **✅** |
+
+### 10.2 单个业务模块预算
+
+| 指标 | 目标 | 阈值 | 备注 |
+| :--- | ---: | ---: | :--- |
+| remoteEntry.js | ≤ 8 KB | ≤ 16 KB | 元信息 |
+| 主 chunk | ≤ 80 KB | ≤ 120 KB | gzip |
+| 额外 lazy chunk 平均 | ≤ 40 KB | ≤ 60 KB | 按路由 |
+| 非 shared 新依赖数 | ≤ 2 | ≤ 5 | PR 检查 |
+| 新增 shared 依赖 | 0 | ≤ 1 | 必须 ADR 批准 |
+
+---
+
+> 本手册内容将随迭代持续扩充；若某类型 Markdown 在目标渲染器中显示异常，可将对应子节编号反馈至工程化小组复现并修复。
